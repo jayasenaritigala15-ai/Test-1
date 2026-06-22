@@ -1,0 +1,21 @@
+
+## 🌐 Browser Support
+
+- Chrome 80+
+- Firefox 75+
+- Edge 80+
+- Safari 14+ (limited)
+
+## 📝 License
+
+MIT License - Free to use and modify
+
+## 🙏 Credits
+
+- Font Awesome for icons
+- Google Fonts (Orbitron, Rajdhani)
+- Tailwind CSS
+
+---
+
+**Made with ❤️ for DJs everywhere**

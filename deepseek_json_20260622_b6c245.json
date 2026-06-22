@@ -1,0 +1,15 @@
+{
+  "version": 2,
+  "sessionId": 1700000000000,
+  "date": "2026-01-01T00:00:00.000Z",
+  "xp": 0,
+  "achs": [],
+  "pl": [
+    "My First Track.mp3",
+    "My Second Track.mp3"
+  ],
+  "history": [
+    "12:00:00 - Started session",
+    "12:05:00 - Loaded: My First Track.mp3"
+  ]
+}

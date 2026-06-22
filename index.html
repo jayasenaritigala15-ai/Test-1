@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="si" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+    <title>hpskw PRO - Advanced DJ System</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<!-- START OVERLAY -->
+<div id="startOverlay">
+    <img src="https://z-cdn-media.chatglm.cn/files/11372b97-f868-4b3b-8dd5-96b5c1b6419d.jpg?auth_key=1882030795-2ceac2083bdd47d69c4499eb77302399-0-a96e6d68035daceca8e7808d449a0313" alt="hpskw" style="width:140px;border-radius:12px;box-shadow:0 0 30px rgba(255,145,0,.3)">
+    <h1>hpskw PRO</h1>
+    <div class="pulse-circle"><i class="fas fa-play text-xl" style="color:var(--acc)"></i></div>
+    <p style="color:var(--muted);font-size:15px">CLICK TO START</p>
+    <p style="color:var(--muted);font-size:10px">Version 2.0 • Advanced DJ System</p>
+</div>
+
+<!-- HEADER -->
+<header class="sticky top-0 z-50 backdrop-blur-xl" style="background:rgba(5,5,16,.92);border-bottom:1px solid var(--border)">
+<div class="max-w-[1800px] mx-auto px-3 py-1 flex items-center justify-between gap-2 flex-wrap">
+    <div class="flex items-center gap-2">
+        <img src="https://z-cdn-media.chatglm.cn/files/11372b97-f868-4b3b-8dd5-96b5c1b6419d.jpg?auth_key=1882030795-2ceac2083bdd47d69c4499eb77302399-0-a96e6d68035daceca8e7808d449a0313" alt="hpskw" class="logo-hdr">
+        <span class="fd text-sm font-black" style="background:linear-gradient(135deg,var(--ca),var(--acc),var(--cb));-webkit-background-clip:text;-webkit-text-fill-color:transparent">hpskw PRO</span>
+        <span class="text-[9px] font-bold px-1 py-0.5 rounded" style="background:var(--bg3);color:var(--acc)">v2.0</span>
+    </div>
+    <div class="flex items-center gap-2 flex-1 max-w-[200px]">
+        <span class="text-[9px] font-bold" style="color:var(--acc)" id="rankTxt">Beginner DJ</span>
+        <div class="xpbar flex-1"><div class="xpfill" id="xpBar" style="width:0%"></div></div>
+        <span class="text-[9px]" style="color:var(--muted)" id="xpTxt">0</span>
+    </div>
+    <div class="flex items-center gap-1 flex-wrap">
+        <button onclick="toggleVoice()" class="btn text-[10px]" id="voiceBtn"><i class="fas fa-microphone"></i></button>
+        <button onclick="toggleFS()" class="btn text-[10px]"><i class="fas fa-expand"></i></button>
+        <button onclick="toggleTheme()" class="btn text-[10px]" id="themeBtn"><i class="fas fa-moon"></i></button>
+        <button onclick="exportSession()" class="btn text-[10px]" title="Export Session"><i class="fas fa-file-export"></i></button>
+        <button onclick="importSession()" class="btn text-[10px]" title="Import Session"><i class="fas fa-file-import"></i></button>
+        <input type="file" id="sessionInput" accept=".json" class="hidden" onchange="importSessionFile(this)">
+    </div>
+</div>
+</header>
+
+<!-- MAIN -->
+<main class="max-w-[1800px] mx-auto p-2 space-y-2">
+
+<!-- ===== CAT EAR VISUALIZER ===== -->
+<div class="viz-section">
+    <canvas class="viz-canvas" id="vizCanvas" style="height:320px"></canvas>
+    <div class="absolute bottom-1 left-2 right-2 flex justify-between text-[8px]" style="color:var(--muted)">
+        <span id="vizBpm">-- BPM</span>
+        <span id="vizStatus">● READY</span>
+        <span id="vizTime">--:--</span>
+    </div>
+</div>
+
+<!-- DECKS ROW -->
+<div class="drow flex gap-2 items-start">
+
+<!-- DECK A -->
+<div class="flex-1 min-w-0">
+<div class="card glow-a p-2 space-y-1.5">
+    <div class="flex items-center justify-between flex-wrap gap-1">
+        <div class="flex items-center gap-1"><span class="fd font-bold text-[11px]" style="color:var(--ca)">DECK A</span><span class="text-[9px] px-1 py-0.5 rounded" style="background:var(--bg);color:var(--muted)" id="aBpm">--</span><span class="text-[9px] px-1 py-0.5 rounded" style="background:var(--bg);color:var(--muted)" id="aKey">--</span></div>
+        <div class="flex items-center gap-0.5"><span class="text-[10px] font-mono" style="color:var(--ca)" id="aTime">0:00</span><span class="text-[9px]" style="color:var(--muted)">/</span><span class="text-[9px]" style="color:var(--muted)" id="aDur">0:00</span></div>
+    </div>
+    <canvas class="wave" id="waveA"></canvas>
+    <div class="flex gap-1.5 items-start">
+        <div class="vinyl" id="vinylA"></div>
+        <div class="flex-1 space-y-1">
+            <div class="flex gap-0.5 flex-wrap">
+                <button onclick="dA.cue()" class="btn text-[10px]" style="color:var(--ca)"><i class="fas fa-backward"></i> CUE</button>
+                <button onclick="dA.toggle()" class="btn text-[10px]" id="aPlayBtn"><i class="fas fa-play"></i> PLAY</button>
+                <button onclick="dA.syncTo(dB)" class="btn text-[10px]">SYNC</button>
+                <button onclick="dA.reverse()" class="btn text-[10px]" id="aRevBtn"><i class="fas fa-undo-alt"></i></button>
+                <button onclick="dA.keyShift()" class="btn text-[10px]" id="aKeyBtn"><i class="fas fa-music"></i> KEY</button>
+            </div>
+            <div class="flex gap-0.5 flex-wrap">
+                <button onclick="dA.setLoop(0)" class="btn text-[9px] lb" data-d="a" data-b="0">OFF</button>
+                <button onclick="dA.setLoop(1)" class="btn text-[9px] lb" data-d="a" data-b="1">1</button>
+                <button onclick="dA.setLoop(2)" class="btn text-[9px] lb" data-d="a" data-b="2">2</button>
+                <button onclick="dA.setLoop(4)" class="btn text-[9px] lb" data-d="a" data-b="4">4</button>
+                <button onclick="dA.setLoop(8)" class="btn text-[9px] lb" data-d="a" data-b="8">8</button>
+                <button onclick="dA.setLoop(16)" class="btn text-[9px] lb" data-d="a" data-b="16">16</button>
+            </div>
+            <div class="flex gap-0.5" id="aCues"></div>
+        </div>
+    </div>
+    <div class="flex items-center gap-1"><span class="text-[9px] font-bold w-7" style="color:var(--ca)">PITCH</span><input type="range" class="flex-1 ra" id="aPitch" min="-8" max="8" step="0.1" value="0" oninput="dA.setPitch(this.value)"><span class="text-[9px] font-mono w-9 text-right" style="color:var(--ca)" id="aPitchV">0.0%</span></div>
+    <div class="flex justify-center gap-2">
+        <div class="text-center"><span class="text-[8px] font-bold" style="color:var(--ca)">LOW</span><br><input type="range" class="ra eq-v" id="aEL" min="-12" max="12" step="0.5" value="0" oninput="dA.setEQ('l',this.value)"><span class="text-[8px]" style="color:var(--muted)" id="aELv">0</span></div>
+        <div class="text-center"><span class="text-[8px] font-bold" style="color:var(--ca)">MID</span><br><input type="range" class="ra eq-v" id="aEM" min="-12" max="12" step="0.5" value="0" oninput="dA.setEQ('m',this.value)"><span class="text-[8px]" style="color:var(--muted)" id="aEMv">0</span></div>
+        <div class="text-center"><span class="text-[8px] font-bold" style="color:var(--ca)">HI</span><br><input type="range" class="ra eq-v" id="aEH" min="-12" max="12" step="0.5" value="0" oninput="dA.setEQ('h',this.value)"><span class="text-[8px]" style="color:var(--muted)" id="aEHv">0</span></div>
+    </div>
+    <div class="flex items-center gap-1"><span class="text-[8px] font-bold w-6" style="color:var(--ca)">FLT</span><input type="range" class="flex-1 ra" id="aFlt" min="20" max="20000" step="10" value="20000" oninput="dA.setFilter(this.value)"><span class="text-[8px] font-bold w-5" style="color:var(--ca)">VOL</span><input type="range" class="w-14 ra" id="aVol" min="0" max="1.5" step="0.01" value="0.8" oninput="dA.setVol(this.value)"><div class="w-1.5 h-5 rounded overflow-hidden" style="background:var(--bg)"><div id="aVU" class="w-full rounded" style="background:var(--ca);height:0%;transition:height 60ms"></div></div></div>
+    <label class="btn text-[10px] w-full text-center cursor-pointer block" style="color:var(--ca);border-color:rgba(0,229,255,.3)"><i class="fas fa-folder-open"></i> Load (A)<input type="file" accept="audio/*" class="hidden" onchange="loadFile(this.files[0],'A')"></label>
+    <div class="text-[9px] truncate" style="color:var(--muted)" id="aName">ගොනුවක් තෝරන්න...</div>
+</div>
+</div>
+
+<!-- CENTER MIXER -->
+<div class="cmid flex flex-col gap-1.5" style="min-width:180px;max-width:220px;flex-shrink:0">
+    <div class="card p-1.5 space-y-1">
+        <div class="text-center"><span class="fd text-[8px] font-bold" style="color:var(--acc)">MASTER</span></div>
+        <div class="flex items-center gap-1"><span class="text-[8px]" style="color:var(--muted)">VOL</span><input type="range" class="flex-1 rx" id="mVol" min="0" max="1.5" step="0.01" value="1" oninput="setMaster(this.value)"></div>
+        <div class="flex gap-0.5">
+            <button onclick="toggleBass()" class="btn text-[8px] flex-1" id="bassBtn"><i class="fas fa-fire"></i> BASS+</button>
+            <button onclick="toggleKara()" class="btn text-[8px] flex-1" id="karaBtn"><i class="fas fa-user-slash"></i> KARA</button>
+            <button onclick="toggleHarmonic()" class="btn text-[8px] flex-1" id="harmBtn"><i class="fas fa-magic"></i> HARM</button>
+        </div>
+        <div class="flex items-center gap-1"><span class="text-[8px]" style="color:var(--muted)">LIM</span><input type="range" class="flex-1 rx" id="limiter" min="0" max="1" step="0.01" value="0.8" oninput="setLimiter(this.value)"></div>
+    </div>
+    <div class="card p-1.5 space-y-0.5">
+        <div class="flex justify-between text-[8px] font-bold"><span style="color:var(--ca)">A</span><span style="color:var(--acc)">XFADE</span><span style="color:var(--cb)">B</span></div>
+        <input type="range" class="w-full rx" id="xfade" min="0" max="1" step="0.005" value="0.5" oninput="setXF(this.value)">
+        <div class="flex gap-0.5"><button onclick="setXF(0)" class="btn text-[8px] flex-1" style="color:var(--ca)">A</button><button onclick="setXF(.5)" class="btn text-[8px] flex-1" style="color:var(--acc)">C</button><button onclick="setXF(1)" class="btn text-[8px] flex-1" style="color:var(--cb)">B</button></div>
+    </div>
+    <div class="card p-1.5 space-y-0.5">
+        <div class="text-center"><span class="fd text-[8px] font-bold" style="color:var(--acc)">EFFECTS</span></div>
+        <div class="grid grid-cols-2 gap-0.5" id="efxGrid"></div>
+        <div class="flex items-center gap-0.5"><span class="text-[8px]" style="color:var(--muted)">WET</span><input type="range" class="flex-1 rx" id="efxWet" min="0" max="1" step="0.01" value="0.5" oninput="applyEfx()"></div>
+    </div>
+    <div class="card p-1.5 flex gap-0.5 flex-wrap">
+        <button onclick="toggleRec()" class="btn text-[9px] flex-1" id="recBtn"><i class="fas fa-circle" style="color:#f00"></i> REC</button>
+        <button onclick="toggleAuto()" class="btn text-[9px] flex-1" id="autoBtn"><i class="fas fa-robot"></i> AUTO</button>
+        <button onclick="horn()" class="btn text-[9px] flex-1" style="color:var(--warn)"><i class="fas fa-bullhorn"></i></button>
+        <button onclick="triggerDrop()" class="btn text-[9px] flex-1" style="color:var(--ok)"><i class="fas fa-bolt"></i> DROP</button>
+    </div>
+</div>
+
+<!-- DECK B -->
+<div class="flex-1 min-w-0">
+<div class="card glow-b p-2 space-y-1.5">
+    <div class="flex items-center justify-between flex-wrap gap-1">
+        <div class="flex items-center gap-1"><span class="fd font-bold text-[11px]" style="color:var(--cb)">DECK B</span><span class="text-[9px] px-1 py-0.5 rounded" style="background:var(--bg);color:var(--muted)" id="bBpm">--</span><span class="text-[9px] px-1 py-0.5 rounded" style="background:var(--bg);color:var(--muted)" id="bKey">--</span></div>
+        <div class="flex items-center gap-0.5"><span class="text-[10px] font-mono" style="color:var(--cb)" id="bTime">0:00</span><span class="text-[9px]" style="color:var(--muted)">/</span><span class="text-[9px]" style="color:var(--muted)" id="bDur">0:00</span></div>
+    </div>
+    <canvas class="wave" id="waveB"></canvas>
+    <div class="flex gap-1.5 items-start">
+        <div class="vinyl" id="vinylB"></div>
+        <div class="flex-1 space-y-1">
+            <div class="flex gap-0.5 flex-wrap">
+                <button onclick="dB.cue()" class="btn text-[10px]" style="color:var(--cb)"><i class="fas fa-backward"></i> CUE</button>
+                <button onclick="dB.toggle()" class="btn text-[10px]" id="bPlayBtn"><i class="fas fa-play"></i> PLAY</button>
+                <button onclick="dB.syncTo(dA)" class="btn text-[10px]">SYNC</button>
+                <button onclick="dB.reverse()" class="btn text-[10px]" id="bRevBtn"><i class="fas fa-undo-alt"></i></button>
+                <button onclick="dB.keyShift()" class="btn text-[10px]" id="bKeyBtn"><i class="fas fa-music"></i> KEY</button>
+            </div>
+            <div class="flex gap-0.5 flex-wrap">
+                <button onclick="dB.setLoop(0)" class="btn text-[9px] lb" data-d="b" data-b="0">OFF</button>
+                <button onclick="dB.setLoop(1)" class="btn text-[9px] lb" data-d="b" data-b="1">1</button>
+                <button onclick="dB.setLoop(2)" class="btn text-[9px] lb" data-d="b" data-b="2">2</button>
+                <button onclick="dB.setLoop(4)" class="btn text-[9px] lb" data-d="b" data-b="4">4</button>
+                <button onclick="dB.setLoop(8)" class="btn text-[9px] lb" data-d="b" data-b="8">8</button>
+                <button onclick="dB.setLoop(16)" class="btn text-[9px] lb" data-d="b" data-b="16">16</button>
+            </div>
+            <div class="flex gap-0.5" id="bCues"></div>
+        </div>
+    </div>
+    <div class="flex items-center gap-1"><span class="text-[9px] font-bold w-7" style="color:var(--cb)">PITCH</span><input type="range" class="flex-1 rb" id="bPitch" min="-8" max="8" step="0.1" value="0" oninput="dB.setPitch(this.value)"><span class="text-[9px] font-mono w-9 text-right" style="color:var(--cb)" id="bPitchV">0.0%</span></div>
+    <div class="flex justify-center gap-2">
+        <div class="text-center"><span class="text-[8px] font-bold" style="color:var(--cb)">LOW</span><br><input type="range" class="rb eq-v" id="bEL" min="-12" max="12" step="0.5" value="0" oninput="dB.setEQ('l',this.value)"><span class="text-[8px]" style="color:var(--muted)" id="bELv">0</span></div>
+        <div class="text-center"><span class="text-[8px] font-bold" style="color:var(--cb)">MID</span><br><input type="range" class="rb eq-v" id="bEM" min="-12" max="12" step="0.5" value="0" oninput="dB.setEQ('m',this.value)"><span class="text-[8px]" style="color:var(--muted)" id="bEMv">0</span></div>
+        <div class="text-center"><span class="text-[8px] font-bold" style="color:var(--cb)">HI</span><br><input type="range" class="rb eq-v" id="bEH" min="-12" max="12" step="0.5" value="0" oninput="dB.setEQ('h',this.value)"><span class="text-[8px]" style="color:var(--muted)" id="bEHv">0</span></div>
+    </div>
+    <div class="flex items-center gap-1"><span class="text-[8px] font-bold w-6" style="color:var(--cb)">FLT</span><input type="range" class="flex-1 rb" id="bFlt" min="20" max="20000" step="10" value="20000" oninput="dB.setFilter(this.value)"><span class="text-[8px] font-bold w-5" style="color:var(--cb)">VOL</span><input type="range" class="w-14 rb" id="bVol" min="0" max="1.5" step="0.01" value="0.8" oninput="dB.setVol(this.value)"><div class="w-1.5 h-5 rounded overflow-hidden" style="background:var(--bg)"><div id="bVU" class="w-full rounded" style="background:var(--cb);height:0%;transition:height 60ms"></div></div></div>
+    <label class="btn text-[10px] w-full text-center cursor-pointer block" style="color:var(--cb);border-color:rgba(255,23,68,.3)"><i class="fas fa-folder-open"></i> Load (B)<input type="file" accept="audio/*" class="hidden" onchange="loadFile(this.files[0],'B')"></label>
+    <div class="text-[9px] truncate" style="color:var(--muted)" id="bName">ගොනුවක් තෝරන්න...</div>
+</div>
+</div>
+</div>
+
+<!-- BOTTOM TABS -->
+<div class="card overflow-hidden">
+    <div class="flex border-b overflow-x-auto" style="border-color:var(--border)">
+        <button class="tbtn on" onclick="stab('sam',this)"><i class="fas fa-drum"></i> Samplers</button>
+        <button class="tbtn" onclick="stab('pl',this)"><i class="fas fa-list"></i> Playlist</button>
+        <button class="tbtn" onclick="stab('ai',this)"><i class="fas fa-brain"></i> AI</button>
+        <button class="tbtn" onclick="stab('vc',this)"><i class="fas fa-microphone"></i> Voice</button>
+        <button class="tbtn" onclick="stab('ach',this)"><i class="fas fa-trophy"></i> XP</button>
+        <button class="tbtn" onclick="stab('hist',this)"><i class="fas fa-history"></i> History</button>
+    </div>
+    <div class="tpanel on p-1.5" id="tp-sam"><div class="grid grid-cols-8 gap-0.5" id="samGrid"></div></div>
+    <div class="tpanel p-1.5" id="tp-pl">
+        <div class="flex gap-1 mb-1 flex-wrap">
+            <label class="btn text-[9px] cursor-pointer"><i class="fas fa-plus"></i> Add<input type="file" accept="audio/*" multiple class="hidden" onchange="addPL(this.files)"></label>
+            <button onclick="savePL()" class="btn text-[9px]"><i class="fas fa-save"></i> Save</button>
+            <button onclick="clearPL()" class="btn text-[9px]"><i class="fas fa-trash"></i> Clear</button>
+            <button onclick="shufflePL()" class="btn text-[9px]"><i class="fas fa-random"></i> Shuffle</button>
+            <button onclick="playNext()" class="btn text-[9px]" style="color:var(--ok)"><i class="fas fa-forward"></i> Next</button>
+        </div>
+        <div class="space-y-0.5 max-h-36 overflow-y-auto" id="plBox"><div class="text-[9px] text-center py-2" style="color:var(--muted)">Playlist හිස්ය</div></div>
+    </div>
+    <div class="tpanel p-1.5" id="tp-ai">
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-0.5">
+            <button onclick="aiGenre()" class="btn text-[9px] text-left"><i class="fas fa-music" style="color:var(--acc)"></i> Genre</button>
+            <button onclick="aiMood()" class="btn text-[9px] text-left"><i class="fas fa-smile" style="color:var(--acc)"></i> Mood</button>
+            <button onclick="aiBeatMatch()" class="btn text-[9px] text-left"><i class="fas fa-link" style="color:var(--acc)"></i> BeatMatch</button>
+            <button onclick="aiTransition()" class="btn text-[9px] text-left"><i class="fas fa-exchange-alt" style="color:var(--acc)"></i> Transition</button>
+            <button onclick="aiVoiceDJ()" class="btn text-[9px] text-left"><i class="fas fa-comment-dots" style="color:var(--acc)"></i> VoiceDJ</button>
+            <button onclick="aiPlaylist()" class="btn text-[9px] text-left"><i class="fas fa-list-ol" style="color:var(--acc)"></i> Playlist</button>
+            <button onclick="aiRemix()" class="btn text-[9px] text-left"><i class="fas fa-random" style="color:var(--acc)"></i> Remix</button>
+            <button onclick="aiRecommend()" class="btn text-[9px] text-left"><i class="fas fa-magic" style="color:var(--acc)"></i> Recommend</button>
+            <button onclick="aiEnergy()" class="btn text-[9px] text-left"><i class="fas fa-bolt" style="color:var(--ok)"></i> Energy</button>
+            <button onclick="aiCuePredict()" class="btn text-[9px] text-left"><i class="fas fa-clock" style="color:var(--ok)"></i> Cue Predict</button>
+        </div>
+        <div class="mt-1 p-1 rounded text-[9px]" style="background:var(--bg);color:var(--muted)" id="aiOut">AI feature එකක් තෝරන්න...</div>
+    </div>
+    <div class="tpanel p-1.5" id="tp-vc">
+        <div class="text-[10px] font-bold mb-1" style="color:var(--acc)"><i class="fas fa-microphone"></i> Voice Commands</div>
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-0.5 text-[9px]" style="color:var(--muted)">
+            <div class="p-1 rounded" style="background:var(--bg)"><b style="color:var(--text)">"play A"</b></div>
+            <div class="p-1 rounded" style="background:var(--bg)"><b style="color:var(--text)">"stop B"</b></div>
+            <div class="p-1 rounded" style="background:var(--bg)"><b style="color:var(--text)">"bass up"</b></div>
+            <div class="p-1 rounded" style="background:var(--bg)"><b style="color:var(--text)">"next track"</b></div>
+            <div class="p-1 rounded" style="background:var(--bg)"><b style="color:var(--text)">"loop 4"</b></div>
+            <div class="p-1 rounded" style="background:var(--bg)"><b style="color:var(--text)">"horn"</b></div>
+            <div class="p-1 rounded" style="background:var(--bg)"><b style="color:var(--text)">"drop"</b></div>
+            <div class="p-1 rounded" style="background:var(--bg)"><b style="color:var(--text)">"sync"</b></div>
+        </div>
+        <div class="mt-1 text-[9px]" style="color:var(--muted)" id="vcStat">Voice: OFF</div>
+    </div>
+    <div class="tpanel p-1.5" id="tp-ach"><div class="grid grid-cols-2 md:grid-cols-4 gap-0.5" id="achGrid"></div></div>
+    <div class="tpanel p-1.5" id="tp-hist">
+        <div class="max-h-28 overflow-y-auto" id="histBox"><div class="text-[9px] text-center py-2" style="color:var(--muted)">No history yet</div></div>
+        <button onclick="clearHistory()" class="btn text-[9px] mt-1"><i class="fas fa-trash"></i> Clear</button>
+    </div>
+</div>
+</main>
+
+<div id="dropZone"><i class="fas fa-music text-4xl" style="color:var(--acc)"></i><div class="fd text-lg font-bold" style="color:var(--acc)">DROP AUDIO</div></div>
+<div class="fixed top-10 right-3 flex items-center gap-1 px-2 py-0.5 rounded-lg z-50 hidden" id="recInd" style="background:rgba(255,0,0,.15);border:1px solid #f00"><div class="rec-dot"></div><span class="text-[10px] font-bold" style="color:#f00" id="recT">00:00</span></div>
+<div class="achpop" id="achPop"><i class="fas fa-trophy text-2xl mb-1" style="color:var(--acc)"></i><div class="fd text-xs font-bold" id="achT"></div><div class="text-[9px]" style="color:var(--muted)" id="achD"></div></div>
+
+<script src="script.js"></script>
+</body>
+</html>
